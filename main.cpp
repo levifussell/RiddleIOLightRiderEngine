@@ -4,6 +4,7 @@
 #include <stdexcept>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string>
 
 #include "helpers.h"
 
@@ -44,38 +45,44 @@ void sendUpdateCommandField(char* player, char* type, const Grid& grid);
 void sendActionCommand(char* type, int time);
 void sendActionPlayerCommand(char* type, int time, int player);
 void printFieldString(const Grid& grid);
-void runOneRound(Grid& grid);
+void runOnePlayerStep(Grid& grid, int NUM);
+void runOneRound(Grid& grid, sf::RenderWindow& window, int NUM);
+
+void resetGame(Grid& grid);
 
 int main()
 {
     srand(time(NULL));
 
+    Grid grid;
     //Grid grid = createGrid(5, 5);
-    Grid grid = createGridFromMap(16, 16, mapLR());
-    grid.data.at(0).at(0) = PLAYER1_VAL;
-    grid.data.at(0).at(5) = PLAYER2_VAL;
-    roundCount = 0;
+    //Grid grid = createGridFromMap(16, 16, mapLR());
+    //grid.data.at(0).at(0) = PLAYER1_VAL;
+    //grid.data.at(0).at(5) = PLAYER2_VAL;
+    //roundCount = 0;
+    resetGame(grid);
 
     //readPlayerAction(grid, PLAYER1_VAL, "down");
     //readPlayerAction(grid, PLAYER1_VAL, "right");
-    movePlayerDown(grid, PLAYER1_VAL);
-    movePlayerDown(grid, PLAYER1_VAL);
-    movePlayerRight(grid, PLAYER1_VAL);
-    movePlayerRight(grid, PLAYER1_VAL);
-    movePlayerDown(grid, PLAYER1_VAL);
-    movePlayerDown(grid, PLAYER1_VAL);
+    //movePlayerDown(grid, PLAYER1_VAL);
+    //movePlayerDown(grid, PLAYER1_VAL);
+    //movePlayerRight(grid, PLAYER1_VAL);
+    //movePlayerRight(grid, PLAYER1_VAL);
+    //movePlayerDown(grid, PLAYER1_VAL);
+    //movePlayerDown(grid, PLAYER1_VAL);
 
-    movePlayerDown(grid, PLAYER2_VAL);
-    movePlayerDown(grid, PLAYER2_VAL);
-    movePlayerRight(grid, PLAYER2_VAL);
-    movePlayerRight(grid, PLAYER2_VAL);
-    movePlayerDown(grid, PLAYER2_VAL);
-    movePlayerDown(grid, PLAYER2_VAL);
+    //movePlayerDown(grid, PLAYER2_VAL);
+    //movePlayerDown(grid, PLAYER2_VAL);
+    //movePlayerRight(grid, PLAYER2_VAL);
+    //movePlayerRight(grid, PLAYER2_VAL);
+    //movePlayerDown(grid, PLAYER2_VAL);
+    //movePlayerDown(grid, PLAYER2_VAL);
+
 
     sf::RenderWindow window(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "Light Rider");
 
-    runOneRound(grid);
-
+    bool skipFirst = true;
+    bool player1Turn = true;
     while(window.isOpen())
     {
         sf::Event event;
@@ -87,7 +94,21 @@ int main()
 
         window.clear();
 
-        printGrid(grid, window);
+        if(!skipFirst)
+        {
+            if(player1Turn)
+                runOneRound(grid, window, PLAYER1_VAL);
+            else
+                runOneRound(grid, window, PLAYER2_VAL);
+
+            player1Turn = !player1Turn;
+        }
+        else
+        {
+            printGrid(grid, window);
+        }
+        skipFirst = false;
+
 
         window.display();
     }
@@ -95,6 +116,17 @@ int main()
     return 0;
 }
 
+void resetGame(Grid& grid)
+{
+
+    grid = createGridFromMap(16, 16, mapLR());
+    int p_row = rand() % 16;
+    int p1_col = rand() % 7;
+    int p2_col = 15 - p1_col;
+    grid.data.at(p_row).at(p1_col) = PLAYER1_VAL;
+    grid.data.at(p_row).at(p2_col) = PLAYER2_VAL;
+    roundCount = 0;
+}
 
 Grid createGrid(int rows, int columns)
 {
@@ -180,16 +212,18 @@ bool movePlayerDown(Grid& grid, int NUM) { movePlayer(0, 1, grid, NUM); }
 bool movePlayerUp(Grid& grid, int NUM) { movePlayer(0, -1, grid, NUM); }
 bool movePlayerLeft(Grid& grid, int NUM) { movePlayer(-1, 0, grid, NUM); }
 bool movePlayerRight(Grid& grid, int NUM) { movePlayer(1, 0, grid, NUM); }
-bool readPlayerAction(Grid& grid, int NUM, char* action)
+bool readPlayerAction(Grid& grid, int NUM, std::string action)
 {
-    if(Helpers::stringCompare(action, "up"))
-        movePlayerUp(grid, NUM);
-    else if(Helpers::stringCompare(action, "down"))
-        movePlayerDown(grid, NUM);
-    else if(Helpers::stringCompare(action, "left"))
-        movePlayerLeft(grid, NUM);
-    else if(Helpers::stringCompare(action, "right"))
-        movePlayerRight(grid, NUM);
+    if(action.compare("up") == 0)
+        return movePlayerUp(grid, NUM);
+    else if(action.compare("down") == 0)
+        return movePlayerDown(grid, NUM);
+    else if(action.compare("left") == 0)
+        return movePlayerLeft(grid, NUM);
+    else if(action.compare("right") == 0)
+        return movePlayerRight(grid, NUM);
+    else if(action.compare("reset") == 0)
+        resetGame(grid);
     else
         throw std::invalid_argument("invalid control input");
 }
@@ -224,24 +258,26 @@ void printFieldString(const Grid& grid)
     }
     std::cout << "]";
 }
-void runOneRound(Grid& grid)
+void runOnePlayerStep(Grid& grid, int NUM)
+{
+    //input for player
+    sendActionPlayerCommand("move", 200, NUM);
+    std::string player_move;
+    std::getline(std::cin, player_move);
+    bool playerIsDead = readPlayerAction(grid, NUM, player_move);
+
+    if(playerIsDead)
+        std::cout << "dead player " << NUM << "\n";
+}
+void runOneRound(Grid& grid, sf::RenderWindow& window, int NUM)
 {
     sendUpdateCommand("game", "round", roundCount);
     sendUpdateCommandField("game", "field", grid);
 
     //input for player1
-    sendActionPlayerCommand("move", 200, PLAYER1_VAL);
-    char* player1_move;
-    std::cin >> player1_move;
-    std::cout << player1_move << "\n";
-    readPlayerAction(grid, PLAYER1_VAL, "up");
+    runOnePlayerStep(grid, NUM);
 
-    //input for player2
-    sendActionPlayerCommand("move", 200, PLAYER2_VAL);
-    char* player2_move;
-    std::cin >> player2_move;
-    std::cout << player2_move << "\n";
-    readPlayerAction(grid, PLAYER2_VAL, "up");
+    printGrid(grid, window);
 
     //increment to next round
     roundCount++;
