@@ -2,6 +2,8 @@
 #include <iostream>
 #include <vector>
 #include <stdexcept>
+#include <stdio.h>
+#include <stdlib.h>
 
 #include "helpers.h"
 
@@ -22,6 +24,7 @@ const int PLAYER2_VAL = 3;
 const int WALL_VAL = 1;
 const int FLOOR_VAL = 0;
 
+int roundCount;
 bool player1_dead;
 bool player2_dead;
 
@@ -36,6 +39,12 @@ bool movePlayerUp(Grid& grid, int NUM);
 bool movePlayerLeft(Grid& grid, int NUM);
 bool movePlayerRight(Grid& grid, int NUM);
 bool readPlayerAction(Grid& grid, int NUM, char* action);
+void sendUpdateCommand(char* player, char* type, int value);
+void sendUpdateCommandField(char* player, char* type, const Grid& grid);
+void sendActionCommand(char* type, int time);
+void sendActionPlayerCommand(char* type, int time, int player);
+void printFieldString(const Grid& grid);
+void runOneRound(Grid& grid);
 
 int main()
 {
@@ -45,7 +54,10 @@ int main()
     Grid grid = createGridFromMap(16, 16, mapLR());
     grid.data.at(0).at(0) = PLAYER1_VAL;
     grid.data.at(0).at(5) = PLAYER2_VAL;
+    roundCount = 0;
 
+    //readPlayerAction(grid, PLAYER1_VAL, "down");
+    //readPlayerAction(grid, PLAYER1_VAL, "right");
     movePlayerDown(grid, PLAYER1_VAL);
     movePlayerDown(grid, PLAYER1_VAL);
     movePlayerRight(grid, PLAYER1_VAL);
@@ -59,17 +71,10 @@ int main()
     movePlayerRight(grid, PLAYER2_VAL);
     movePlayerDown(grid, PLAYER2_VAL);
     movePlayerDown(grid, PLAYER2_VAL);
-
-    char* h = "hello";
-    char* why = "hello";
-
-    bool same = Helpers::stringCompare(h, why);
-    std::cout << same << "\n";
-
-    //delete h;
-    //delete why;
 
     sf::RenderWindow window(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "Light Rider");
+
+    runOneRound(grid);
 
     while(window.isOpen())
     {
@@ -189,29 +194,57 @@ bool readPlayerAction(Grid& grid, int NUM, char* action)
         throw std::invalid_argument("invalid control input");
 }
 
-void sendUpdateCommand(char* player, char* type, char* value)
+void sendUpdateCommand(char* player, char* type, int value)
 {
     std::cout << "update " << player << " " << type << " " << value << "\n";
 }
-void sendActionCommand(char* type, char* time)
+void sendUpdateCommandField(char* player, char* type, const Grid& grid)
+{
+    std::cout << "update " << player << " " << type;
+    printFieldString(grid);
+    std::cout << "\n";
+}
+void sendActionCommand(char* type, int time)
 {
     std::cout << "action " << type << " " << time << "\n";
 }
-void sendActionPlayerCommand(char* type, char* time, char* player)
+void sendActionPlayerCommand(char* type, int time, int player)
 {
     std::cout << "action " << type << " " << time <<  " " << player << "\n";
 }
-char* getFieldString()
+void printFieldString(const Grid& grid)
 {
-
+    std::cout << "[";
+    for(int r = 0; r < grid.rows; ++r)
+    {
+        for(int c = 0; c < grid.columns; ++c)
+        {
+            std::cout << grid.data.at(r).at(c);
+        }
+    }
+    std::cout << "]";
 }
-void runOneRound()
+void runOneRound(Grid& grid)
 {
-    sendUpdateCommand("game", "round", itoa(roundCount));
-    sendUpdateCommand("game", "field", getFieldString());
+    sendUpdateCommand("game", "round", roundCount);
+    sendUpdateCommandField("game", "field", grid);
 
-    sendActionPlayerCommand("move", "200", itoa(PLAYER1_VAL));
-    sendActionPlayerCommand("move", "200", itoa(PLAYER2_VAL));
+    //input for player1
+    sendActionPlayerCommand("move", 200, PLAYER1_VAL);
+    char* player1_move;
+    std::cin >> player1_move;
+    std::cout << player1_move << "\n";
+    readPlayerAction(grid, PLAYER1_VAL, "up");
+
+    //input for player2
+    sendActionPlayerCommand("move", 200, PLAYER2_VAL);
+    char* player2_move;
+    std::cin >> player2_move;
+    std::cout << player2_move << "\n";
+    readPlayerAction(grid, PLAYER2_VAL, "up");
+
+    //increment to next round
+    roundCount++;
 }
 
 void printGrid(Grid grid, sf::RenderWindow& window)
@@ -244,7 +277,6 @@ void printGrid(Grid grid, sf::RenderWindow& window)
             window.draw(rec);
         }
     }
-
 }
 
 int* mapLR()
