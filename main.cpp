@@ -50,6 +50,10 @@ void runOneRound(Grid& grid, sf::RenderWindow& window, int NUM);
 
 void resetGame(Grid& grid);
 
+bool skipFirst;
+bool player1Turn;
+int playerIsDeadNum;
+
 int main()
 {
     srand(time(NULL));
@@ -61,6 +65,7 @@ int main()
     //grid.data.at(0).at(5) = PLAYER2_VAL;
     //roundCount = 0;
     resetGame(grid);
+    player1Turn = true;
 
     //readPlayerAction(grid, PLAYER1_VAL, "down");
     //readPlayerAction(grid, PLAYER1_VAL, "right");
@@ -81,8 +86,6 @@ int main()
 
     sf::RenderWindow window(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "Light Rider");
 
-    bool skipFirst = true;
-    bool player1Turn = true;
     while(window.isOpen())
     {
         sf::Event event;
@@ -94,20 +97,20 @@ int main()
 
         window.clear();
 
-        if(!skipFirst)
-        {
+        //if(!skipFirst)
+        //{
             if(player1Turn)
                 runOneRound(grid, window, PLAYER1_VAL);
             else
                 runOneRound(grid, window, PLAYER2_VAL);
 
             player1Turn = !player1Turn;
-        }
-        else
-        {
-            printGrid(grid, window);
-        }
-        skipFirst = false;
+        //}
+        //else
+        //{
+            //printGrid(grid, window);
+        //}
+        //skipFirst = false;
 
 
         window.display();
@@ -118,7 +121,9 @@ int main()
 
 void resetGame(Grid& grid)
 {
-
+    skipFirst = true;
+    player1Turn = false;
+    playerIsDeadNum = 0;
     grid = createGridFromMap(16, 16, mapLR());
     int p_row = rand() % 16;
     int p1_col = rand() % 7;
@@ -214,16 +219,22 @@ bool movePlayerLeft(Grid& grid, int NUM) { movePlayer(-1, 0, grid, NUM); }
 bool movePlayerRight(Grid& grid, int NUM) { movePlayer(1, 0, grid, NUM); }
 bool readPlayerAction(Grid& grid, int NUM, std::string action)
 {
-    if(action.compare("up") == 0)
-        return movePlayerUp(grid, NUM);
-    else if(action.compare("down") == 0)
-        return movePlayerDown(grid, NUM);
-    else if(action.compare("left") == 0)
-        return movePlayerLeft(grid, NUM);
-    else if(action.compare("right") == 0)
-        return movePlayerRight(grid, NUM);
+    if(playerIsDeadNum == 0)
+    {
+        if(action.compare("up") == 0)
+            return movePlayerUp(grid, NUM);
+        else if(action.compare("down") == 0)
+            return movePlayerDown(grid, NUM);
+        else if(action.compare("left") == 0)
+            return movePlayerLeft(grid, NUM);
+        else if(action.compare("right") == 0)
+            return movePlayerRight(grid, NUM);
+    }
     else if(action.compare("reset") == 0)
+    {
         resetGame(grid);
+        return false;
+    }
     else
         throw std::invalid_argument("invalid control input");
 }
@@ -260,19 +271,32 @@ void printFieldString(const Grid& grid)
 }
 void runOnePlayerStep(Grid& grid, int NUM)
 {
-    //input for player
-    sendActionPlayerCommand("move", 200, NUM);
+
+    if(playerIsDeadNum == 0)
+    {
+        //input for player
+        sendActionPlayerCommand("move", 200, NUM);
+    }
+
     std::string player_move;
     std::getline(std::cin, player_move);
-    bool playerIsDead = readPlayerAction(grid, NUM, player_move);
-
-    if(playerIsDead)
+    bool isDead = readPlayerAction(grid, NUM, player_move);
+    if(isDead && playerIsDeadNum == 0)
+    {
+        playerIsDeadNum = NUM;
         std::cout << "dead player " << NUM << "\n";
+    }
+
+    //if(playerIsDead)
+        //std::cout << "dead player " << NUM << "\n";
 }
 void runOneRound(Grid& grid, sf::RenderWindow& window, int NUM)
 {
-    sendUpdateCommand("game", "round", roundCount);
-    sendUpdateCommandField("game", "field" , grid);
+    if(playerIsDeadNum == 0)
+    {
+        sendUpdateCommand("game", "round", roundCount);
+        sendUpdateCommandField("game", "field" , grid);
+    }
 
     //input for player1
     runOnePlayerStep(grid, NUM);

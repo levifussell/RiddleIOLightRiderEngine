@@ -1,7 +1,9 @@
 import java.util.Scanner;
+import java.util.concurrent.TimeUnit;
 
 public class javaBot {
 
+    private static boolean DEBUG = true;
     private Scanner scan = new Scanner(System.in);
 
     public void run() {
@@ -28,13 +30,28 @@ public class javaBot {
                     {
                         System.out.println("down");
                     }
+                    System.out.flush();
                     //System.error(parts);
                     //System.out.println(parts);
+
+                    if(DEBUG)
+                    {
+                        //TimeUnit.MILLISECONDS.sleep(500);
+                        try
+                        {
+                            Thread.sleep(1000);
+                        }
+                        catch(InterruptedException ex)
+                        {
+                            Thread.currentThread().interrupt();
+                        }
+                    }
                     break;
                 case "dead":
                     System.out.println("reset");
-                    //System.out.flush();
-                    return;
+                    System.out.flush();
+                    break;
+                    //return;
                 default:
                     // error
             }
