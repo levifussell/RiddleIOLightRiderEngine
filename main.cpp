@@ -272,7 +272,7 @@ void runOnePlayerStep(Grid& grid, int NUM)
 void runOneRound(Grid& grid, sf::RenderWindow& window, int NUM)
 {
     sendUpdateCommand("game", "round", roundCount);
-    sendUpdateCommandField("game", "field", grid);
+    sendUpdateCommandField("game", "field" , grid);
 
     //input for player1
     runOnePlayerStep(grid, NUM);
