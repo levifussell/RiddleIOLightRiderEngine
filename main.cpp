@@ -6,8 +6,6 @@
 #include <stdlib.h>
 #include <string>
 
-#include "helpers.h"
-
 //COMPILE: g++ main.cpp -lsfml-audio -lsfml-network -lsfml-graphics -lsfml-window -lsfml-system
 
 struct Grid
@@ -245,7 +243,7 @@ void sendUpdateCommand(char* player, char* type, int value)
 }
 void sendUpdateCommandField(char* player, char* type, const Grid& grid)
 {
-    std::cout << "update " << player << " " << type;
+    std::cout << "update " << player << " " << type << " ";
     printFieldString(grid);
     std::cout << "\n";
 }
@@ -259,15 +257,30 @@ void sendActionPlayerCommand(char* type, int time, int player)
 }
 void printFieldString(const Grid& grid)
 {
-    std::cout << "[";
+    //std::cout << "[";
     for(int r = 0; r < grid.rows; ++r)
     {
         for(int c = 0; c < grid.columns; ++c)
         {
-            std::cout << grid.data.at(r).at(c);
+            switch(grid.data.at(r).at(c))
+            {
+                case PLAYER1_VAL:
+                    std::cout << "0";
+                    break;
+                case PLAYER2_VAL:
+                    std::cout << "1";
+                    break;
+                case WALL_VAL:
+                    std::cout << "x";
+                    break;
+                case FLOOR_VAL:
+                    std::cout << ".";
+                    break;
+            }
+            std::cout << ",";
         }
     }
-    std::cout << "]";
+    //std::cout << "]";
 }
 void runOnePlayerStep(Grid& grid, int NUM)
 {

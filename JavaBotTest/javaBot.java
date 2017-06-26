@@ -5,6 +5,7 @@ public class javaBot {
 
     private static boolean DEBUG = true;
     private Scanner scan = new Scanner(System.in);
+    private final int DELAY_TIME = 100;
 
     public void run() {
         while (scan.hasNextLine()) {
@@ -39,7 +40,7 @@ public class javaBot {
                         //TimeUnit.MILLISECONDS.sleep(500);
                         try
                         {
-                            Thread.sleep(1000);
+                            Thread.sleep(DELAY_TIME);
                         }
                         catch(InterruptedException ex)
                         {
@@ -50,6 +51,18 @@ public class javaBot {
                 case "dead":
                     System.out.println("reset");
                     System.out.flush();
+                    if(DEBUG)
+                    {
+                        //TimeUnit.MILLISECONDS.sleep(500);
+                        try
+                        {
+                            Thread.sleep(DELAY_TIME);
+                        }
+                        catch(InterruptedException ex)
+                        {
+                            Thread.currentThread().interrupt();
+                        }
+                    }
                     break;
                     //return;
                 default:
