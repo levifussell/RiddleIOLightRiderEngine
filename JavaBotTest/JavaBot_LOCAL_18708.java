@@ -5,7 +5,6 @@ public class JavaBot {
 
     private static boolean DEBUG = true;
     private Scanner scan = new Scanner(System.in);
-    private final int DELAY_TIME = 100;
     private Bot tyrvi = new TyrviBot();
 
     public void run() {
@@ -44,7 +43,7 @@ public class JavaBot {
                         //TimeUnit.MILLISECONDS.sleep(500);
                         try
                         {
-                            Thread.sleep(DELAY_TIME);
+                            Thread.sleep(500);
                         }
                         catch(InterruptedException ex)
                         {
@@ -55,18 +54,6 @@ public class JavaBot {
                 case "dead":
                     System.out.println("reset");
                     System.out.flush();
-                    if(DEBUG)
-                    {
-                        //TimeUnit.MILLISECONDS.sleep(500);
-                        try
-                        {
-                            Thread.sleep(DELAY_TIME);
-                        }
-                        catch(InterruptedException ex)
-                        {
-                            Thread.currentThread().interrupt();
-                        }
-                    }
                     break;
                     //return;
                 default:

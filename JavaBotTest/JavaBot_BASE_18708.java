@@ -1,12 +1,10 @@
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
-public class JavaBot {
+public class javaBot {
 
     private static boolean DEBUG = true;
     private Scanner scan = new Scanner(System.in);
-    private final int DELAY_TIME = 100;
-    private Bot tyrvi = new TyrviBot();
 
     public void run() {
         while (scan.hasNextLine()) {
@@ -25,14 +23,11 @@ public class JavaBot {
                 case "action":
                     if(parts[parts.length - 1].equals("2"))
                     {
-                        // green
-                        //System.out.println("up");
+                        System.out.println("up");
                         //System.out.flush();
-                        System.out.println(tyrvi.getAction());
                     }
                     else
                     {
-                        // red
                         System.out.println("down");
                     }
                     System.out.flush();
@@ -44,7 +39,7 @@ public class JavaBot {
                         //TimeUnit.MILLISECONDS.sleep(500);
                         try
                         {
-                            Thread.sleep(DELAY_TIME);
+                            Thread.sleep(1000);
                         }
                         catch(InterruptedException ex)
                         {
@@ -55,18 +50,6 @@ public class JavaBot {
                 case "dead":
                     System.out.println("reset");
                     System.out.flush();
-                    if(DEBUG)
-                    {
-                        //TimeUnit.MILLISECONDS.sleep(500);
-                        try
-                        {
-                            Thread.sleep(DELAY_TIME);
-                        }
-                        catch(InterruptedException ex)
-                        {
-                            Thread.currentThread().interrupt();
-                        }
-                    }
                     break;
                     //return;
                 default:
@@ -76,7 +59,7 @@ public class JavaBot {
     }
 
     public static void main(String[] args) {
-        (new JavaBot()).run();
+        (new javaBot()).run();
     }
 }
 

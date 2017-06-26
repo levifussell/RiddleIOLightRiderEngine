@@ -5,8 +5,11 @@ public class JavaBot {
 
     private static boolean DEBUG = true;
     private Scanner scan = new Scanner(System.in);
-    private final int DELAY_TIME = 100;
+<<<<<<< HEAD:JavaBotTest/JavaBot.java
     private Bot tyrvi = new TyrviBot();
+=======
+    private final int DELAY_TIME = 100;
+>>>>>>> abb2e76055ce98792bf75aca748b76393a9eedab:JavaBotTest/javaBot.java
 
     public void run() {
         while (scan.hasNextLine()) {
@@ -44,7 +47,11 @@ public class JavaBot {
                         //TimeUnit.MILLISECONDS.sleep(500);
                         try
                         {
+<<<<<<< HEAD:JavaBotTest/JavaBot.java
+                            Thread.sleep(500);
+=======
                             Thread.sleep(DELAY_TIME);
+>>>>>>> abb2e76055ce98792bf75aca748b76393a9eedab:JavaBotTest/javaBot.java
                         }
                         catch(InterruptedException ex)
                         {
