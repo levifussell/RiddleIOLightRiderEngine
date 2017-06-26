@@ -1,10 +1,11 @@
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
-public class javaBot {
+public class JavaBot {
 
     private static boolean DEBUG = true;
     private Scanner scan = new Scanner(System.in);
+    private Bot tyrvi = new TyrviBot();
 
     public void run() {
         while (scan.hasNextLine()) {
@@ -23,11 +24,14 @@ public class javaBot {
                 case "action":
                     if(parts[parts.length - 1].equals("2"))
                     {
-                        System.out.println("up");
+                        // green
+                        //System.out.println("up");
                         //System.out.flush();
+                        System.out.println(tyrvi.getAction());
                     }
                     else
                     {
+                        // red
                         System.out.println("down");
                     }
                     System.out.flush();
@@ -39,7 +43,7 @@ public class javaBot {
                         //TimeUnit.MILLISECONDS.sleep(500);
                         try
                         {
-                            Thread.sleep(1000);
+                            Thread.sleep(500);
                         }
                         catch(InterruptedException ex)
                         {
@@ -59,7 +63,7 @@ public class javaBot {
     }
 
     public static void main(String[] args) {
-        (new javaBot()).run();
+        (new JavaBot()).run();
     }
 }
 
