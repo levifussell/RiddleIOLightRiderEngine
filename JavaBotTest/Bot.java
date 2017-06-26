@@ -72,7 +72,7 @@ public abstract class Bot {
                 break;
 
             case "action":
-                this.getAction();
+                System.out.println(this.getAction());
                 break;
                 
             }
