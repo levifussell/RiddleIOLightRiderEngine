@@ -6,4 +6,3 @@ fi
 mkfifo fifo0 fifo1
 ./../run.out p > fifo0 < fifo1 &
 java JavaBot < fifo0 > fifo1
-
