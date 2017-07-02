@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <string>
 
-//COMPILE: g++ main.cpp -lsfml-audio -lsfml-network -lsfml-graphics -lsfml-window -lsfml-system
+//COMPILE: g++ -o run.out main.cpp -lsfml-audio -lsfml-network -lsfml-graphics -lsfml-window -lsfml-system
 
 struct Grid
 {
@@ -44,7 +44,7 @@ void sendActionCommand(char* type, int time);
 void sendActionPlayerCommand(char* type, int time, int player);
 void printFieldString(const Grid& grid);
 void runOnePlayerStep(Grid& grid, int NUM);
-void runOneRound(Grid& grid, sf::RenderWindow& window, int NUM);
+void runOneRound(Grid& grid, sf::RenderWindow* window, int NUM);
 
 void resetGame(Grid& grid);
 
@@ -52,8 +52,17 @@ bool skipFirst;
 bool player1Turn;
 int playerIsDeadNum;
 
-int main()
+bool printScreen;
+
+int main(int argc, char* argv[])
 {
+    //check for print toggle
+    if(argc > 1)
+        printScreen = (argv[1][0] == 'p');
+    else
+        printScreen = false;
+
+
     srand(time(NULL));
 
     Grid grid;
@@ -82,36 +91,51 @@ int main()
     //movePlayerDown(grid, PLAYER2_VAL);
 
 
-    sf::RenderWindow window(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "Light Rider");
-
-    while(window.isOpen())
+    if(printScreen)
     {
-        sf::Event event;
-        while(window.pollEvent(event))
+        sf::RenderWindow window(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "Light Rider");
+
+        while(window.isOpen())
         {
-            if(event.type == sf::Event::Closed)
-                window.close();
+            sf::Event event;
+            while(window.pollEvent(event))
+            {
+                if(event.type == sf::Event::Closed)
+                    window.close();
+            }
+
+            window.clear();
+
+            //if(!skipFirst)
+            //{
+                if(player1Turn)
+                    runOneRound(grid, &window, PLAYER1_VAL);
+                else
+                    runOneRound(grid, &window, PLAYER2_VAL);
+
+                player1Turn = !player1Turn;
+            //}
+            //else
+            //{
+                //printGrid(grid, window);
+            //}
+            //skipFirst = false;
+
+
+            window.display();
         }
-
-        window.clear();
-
-        //if(!skipFirst)
-        //{
+    }
+    else
+    {
+        while(true)
+        {
             if(player1Turn)
-                runOneRound(grid, window, PLAYER1_VAL);
+                runOneRound(grid, NULL, PLAYER1_VAL);
             else
-                runOneRound(grid, window, PLAYER2_VAL);
+                runOneRound(grid, NULL, PLAYER2_VAL);
 
             player1Turn = !player1Turn;
-        //}
-        //else
-        //{
-            //printGrid(grid, window);
-        //}
-        //skipFirst = false;
-
-
-        window.display();
+        }
     }
 
     return 0;
@@ -303,7 +327,7 @@ void runOnePlayerStep(Grid& grid, int NUM)
     //if(playerIsDead)
         //std::cout << "dead player " << NUM << "\n";
 }
-void runOneRound(Grid& grid, sf::RenderWindow& window, int NUM)
+void runOneRound(Grid& grid, sf::RenderWindow* window, int NUM)
 {
     if(playerIsDeadNum == 0)
     {
@@ -314,7 +338,8 @@ void runOneRound(Grid& grid, sf::RenderWindow& window, int NUM)
     //input for player1
     runOnePlayerStep(grid, NUM);
 
-    printGrid(grid, window);
+    if(window != NULL)
+        printGrid(grid, *window);
 
     //increment to next round
     roundCount++;

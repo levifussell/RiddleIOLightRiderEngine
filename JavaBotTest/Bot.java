@@ -4,17 +4,17 @@ import java.util.Scanner;
 public abstract class Bot {
     private Scanner scan = new Scanner(System.in);
     // settings variables
-    private int timeBank;
-    private int timePerMove;
-    private String playerNames;
-    private String yourBot;
-    private int yourBotId;
-    private int fieldWidth;
-    private int fieldHeight;
+    protected int timeBank;
+    protected int timePerMove;
+    protected String playerNames;
+    protected String yourBot;
+    protected int yourBotId;
+    protected int fieldWidth;
+    protected int fieldHeight;
 
     // game variables
-    private int gameRound;
-    private String gameField;
+    protected int gameRound;
+    protected String gameField;
 
 
     abstract String getAction();
@@ -74,12 +74,12 @@ public abstract class Bot {
             case "action":
                 System.out.println(this.getAction());
                 break;
-                
+
             }
         }
     }
 
     public static void main(String[] args) {
-        
+
     }
 }
