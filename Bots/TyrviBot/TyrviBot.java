@@ -7,4 +7,9 @@ public class TyrviBot extends Bot {
     public String getAction() {
         return "up";
     }
+
+    public static void main(String[] args) {
+        Bot tyrvi = new TyrviBot();
+        tyrvi.runBot();
+    }
 }

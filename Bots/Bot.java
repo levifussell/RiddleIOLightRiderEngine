@@ -16,7 +16,6 @@ public abstract class Bot {
     protected int gameRound;
     protected String gameField;
 
-
     abstract String getAction();
 
     public void updateSettings(String type, String value) {
@@ -53,6 +52,7 @@ public abstract class Bot {
         case "field":
             this.gameField = value;
         }
+        System.out.println(type + " " + value);
     }
 
     public void runBot() {
@@ -68,7 +68,7 @@ public abstract class Bot {
                 break;
 
             case "update":
-                this.updateGame(command[1], command[2]);
+                this.updateGame(command[2], command[3]);
                 break;
 
             case "action":
@@ -77,9 +77,5 @@ public abstract class Bot {
 
             }
         }
-    }
-
-    public static void main(String[] args) {
-
     }
 }
