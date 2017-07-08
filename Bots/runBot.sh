@@ -4,5 +4,5 @@ if [ -p fifo0 ]; then
 fi
 
 mkfifo fifo0 fifo1
-./Engine/run.out p > fifo0 < fifo1 &
-java Bots/JavaBot < fifo0 > fifo1
+./../Engine/run.out p > fifo0 < fifo1 &
+java JavaBot < fifo0 > fifo1
