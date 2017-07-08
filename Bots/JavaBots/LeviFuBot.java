@@ -20,11 +20,14 @@ public class LeviFuBot extends Bot
         this.Initialise();
     }
 
-    public LeviFuBot(int playerIdNumber)
-    {
-        super(playerIdNumber);
-
-        this.Initialise();
+    public static void main(String[] args) {
+        Bot levifu = new LeviFuBot();
+        int id = 3;
+        if (args.length > 0) {
+            id = Integer.parseInt(args[0]);
+        }
+        levifu.setBotId(id);
+        levifu.runBot();
     }
 
     private void Initialise()

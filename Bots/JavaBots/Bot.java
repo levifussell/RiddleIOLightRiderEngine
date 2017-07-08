@@ -18,7 +18,7 @@ public abstract class Bot {
     protected String gameField;
 
     //debug mode
-    protected final boolean DEBUG = true;
+    protected final boolean DEBUG = false;
     private final int DELAY_TIME = 100;
 
     abstract String getAction();
@@ -31,31 +31,31 @@ public abstract class Bot {
         switch (type) {
         case "timebank":
             this.timeBank = Integer.parseInt(value);
-            System.out.println("GOT timebank: " + this.timeBank);
+            //System.out.println("GOT timebank: " + this.timeBank);
             break;
         case "time_per_move":
             this.timePerMove = Integer.parseInt(value);
-            System.out.println("GOT time_per_move: " + this.timePerMove);
+            //System.out.println("GOT time_per_move: " + this.timePerMove);
             break;
         case "player_names":
             this.playerNames = value;
-            System.out.println("GOT player_names: " + this.playerNames.toString());
+            //System.out.println("GOT player_names: " + this.playerNames.toString());
             break;
         case "your_bot":
             this.yourBot = value;
-            System.out.println("GOT your_bot: " + this.yourBot);
+            //System.out.println("GOT your_bot: " + this.yourBot);
             break;
         case "your_botid":
             this.yourBotId = Integer.parseInt(value);
-            System.out.println("GOT your_botid: " + this.yourBotId);
+            //System.out.println("GOT your_botid: " + this.yourBotId);
             break;
         case "field_width":
             this.fieldWidth = Integer.parseInt(value);
-            System.out.println("GOT field_width: " + this.fieldWidth);
+            //System.out.println("GOT field_width: " + this.fieldWidth);
             break;
         case "field_height":
             this.fieldHeight = Integer.parseInt(value);
-            System.out.println("GOT field_height: " + this.fieldHeight);
+            //System.out.println("GOT field_height: " + this.fieldHeight);
             break;
         }
     }
@@ -88,37 +88,37 @@ public abstract class Bot {
                 break;
 
             case "action":
-                if (command.length< 4 || Integer.parseInt(command[3]) == this.yourBotId)
+                if (command.length < 4 || Integer.parseInt(command[3]) == this.yourBotId)
                     System.out.println(this.getAction());
 
-                if(DEBUG)
-                {
-                    //TimeUnit.MILLISECONDS.sleep(500);
-                    try
-                    {
-                        Thread.sleep(DELAY_TIME);
-                    }
-                    catch(InterruptedException ex)
-                    {
-                        Thread.currentThread().interrupt();
-                    }
-                }
+                //if(DEBUG)
+                //{
+                    ////TimeUnit.MILLISECONDS.sleep(500);
+                    //try
+                    //{
+                        //Thread.sleep(DELAY_TIME);
+                    //}
+                    //catch(InterruptedException ex)
+                    //{
+                        //Thread.currentThread().interrupt();
+                    //}
+                //}
                 break;
             case "dead":
                 System.out.println("reset");
-                System.out.flush();
-                if(DEBUG)
-                {
-                    //TimeUnit.MILLISECONDS.sleep(500);
-                    try
-                    {
-                        Thread.sleep(DELAY_TIME);
-                    }
-                    catch(InterruptedException ex)
-                    {
-                        Thread.currentThread().interrupt();
-                    }
-                }
+                //System.out.flush();
+                //if(DEBUG)
+                //{
+                    ////TimeUnit.MILLISECONDS.sleep(500);
+                    //try
+                    //{
+                        //Thread.sleep(DELAY_TIME);
+                    //}
+                    //catch(InterruptedException ex)
+                    //{
+                        //Thread.currentThread().interrupt();
+                    //}
+                //}
                 break;
 
             }
