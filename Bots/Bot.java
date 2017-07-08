@@ -16,9 +16,12 @@ public abstract class Bot {
     protected int gameRound;
     protected String gameField;
 
-
     abstract String getAction();
 
+    public void setBotId(int id) {
+        this.yourBotId = id;
+    }
+    
     public void updateSettings(String type, String value) {
         switch (type) {
         case "timebank":
@@ -44,7 +47,7 @@ public abstract class Bot {
             break;
         }
     }
-
+    
     public void updateGame(String type, String value) {
         switch (type) {
         case "round":
@@ -53,6 +56,7 @@ public abstract class Bot {
         case "field":
             this.gameField = value;
         }
+        System.out.println(type + " " + value);
     }
 
     public void runBot() {
@@ -64,22 +68,19 @@ public abstract class Bot {
             String[] command = line.split(" ");
             switch (command[0]) {
             case "settings":
-                this.updateSettings(command[1], command[2]);
+                this.updateSettings(command[2], command[3]);
                 break;
 
             case "update":
-                this.updateGame(command[1], command[2]);
+                this.updateGame(command[2], command[3]);
                 break;
 
             case "action":
-                System.out.println(this.getAction());
+                if (Integer.parseInt(command[3]) == this.yourBotId)
+                    System.out.println(this.getAction());
                 break;
 
             }
         }
-    }
-
-    public static void main(String[] args) {
-
     }
 }
