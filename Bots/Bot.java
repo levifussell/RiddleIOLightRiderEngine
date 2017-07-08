@@ -20,18 +20,12 @@ public abstract class Bot {
     //debug mode
     protected final boolean DEBUG = true;
     private final int DELAY_TIME = 100;
-    protected int playerIdNumber; //used for local identification of bots
-
-    public Bot()
-    {
-        this.playerIdNumber = -1;
-    }
-    public Bot(int playerIdNumber)
-    {
-        this.playerIdNumber = playerIdNumber;
-    }
 
     abstract String getAction();
+
+    public void setBotId(int id) {
+        this.yourBotId = id;
+    }
 
     public void updateSettings(String type, String value) {
         switch (type) {
@@ -74,6 +68,7 @@ public abstract class Bot {
         case "field":
             this.gameField = value;
         }
+        System.out.println(type + " " + value);
     }
 
     public void runBot() {
@@ -93,19 +88,8 @@ public abstract class Bot {
                 break;
 
             case "action":
-                //System.out.println("up");
-                if(command.length < 4 || Integer.parseInt(command[3]) == this.playerIdNumber)
-                {
-                    if(this.playerIdNumber == 2)
-                        System.out.println("up");
-                    else
-                        System.out.println("down");
-//                    else
-//                    {
-//                        System.out.println(this.getAction());
-//
-//                    }
-                }
+                if (command.length< 4 || Integer.parseInt(command[3]) == this.yourBotId)
+                    System.out.println(this.getAction());
 
                 if(DEBUG)
                 {
@@ -139,9 +123,5 @@ public abstract class Bot {
 
             }
         }
-    }
-
-    public static void main(String[] args) {
-
     }
 }
