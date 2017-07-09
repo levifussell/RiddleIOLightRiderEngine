@@ -1,6 +1,6 @@
 import java.util.Scanner;
 
-public class TyrviBot extends Bot {
+public class BasicBitchBot extends Bot {
 
     private Scanner scan = new Scanner(System.in);
 
@@ -9,17 +9,12 @@ public class TyrviBot extends Bot {
     }
 
     public static void main(String[] args) {
-        Bot tyrvi = new TyrviBot();
+        Bot bitch = new BasicBitchBot();
         int id = 2;
         if (args.length > 0) {
             id = Integer.parseInt(args[0]);
         }
-        tyrvi.setBotId(id);
-        tyrvi.runBot();
-    }
-
-    public void onDead()
-    {
-        //TODO
+        bitch.setBotId(id);
+        bitch.runBot();
     }
 }

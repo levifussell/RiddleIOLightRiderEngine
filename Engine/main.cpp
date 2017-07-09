@@ -20,10 +20,11 @@ struct Grid
 
 const int SCREEN_WIDTH = 500;
 const int SCREEN_HEIGHT = 500;
-const int PLAYER1_VAL = 2;
-const int PLAYER2_VAL = 3;
-const int WALL_VAL = 1;
-const int FLOOR_VAL = 0;
+const int PLAYER1_VAL = 0;
+const int PLAYER2_VAL = 1;
+const int WALL_VAL = 2;
+const int FLOOR_VAL = 3;
+const int PLAYER_IS_DEAD_VAL = -1;
 
 int roundCount;
 bool player1_dead;
@@ -64,7 +65,11 @@ int main(int argc, char* argv[])
     if(argc > 1)
     {
         printScreen = (argv[1][0] == 'p');
-        sleepTimeNanoseconds = atoi(argv[2]) * milisecondsToNano;
+
+        if(argc == 3)
+            sleepTimeNanoseconds = atoi(argv[2]) * milisecondsToNano;
+        else
+            sleepTimeNanoseconds = 80;
     }
     else
         printScreen = false;
@@ -123,7 +128,7 @@ void resetGame(Grid& grid)
 {
     skipFirst = true;
     player1Turn = false;
-    playerIsDeadNum = 0;
+    playerIsDeadNum = PLAYER_IS_DEAD_VAL;
     grid = createGridFromMap(16, 16, mapLR());
     int p_row = rand() % 16;
     int p1_col = rand() % 7;
@@ -219,7 +224,7 @@ bool movePlayerLeft(Grid& grid, int NUM) { movePlayer(-1, 0, grid, NUM); }
 bool movePlayerRight(Grid& grid, int NUM) { movePlayer(1, 0, grid, NUM); }
 bool readPlayerAction(Grid& grid, int NUM, std::string action)
 {
-    if(playerIsDeadNum == 0)
+    if(playerIsDeadNum == PLAYER_IS_DEAD_VAL)
     {
         if(action.compare("up") == 0)
             return movePlayerUp(grid, NUM);
@@ -290,7 +295,7 @@ void printFieldString(const Grid& grid)
 void runOnePlayerStep(Grid& grid, int NUM)
 {
 
-    if(playerIsDeadNum == 0)
+    if(playerIsDeadNum == PLAYER_IS_DEAD_VAL)
     {
         //input for player
         sendActionPlayerCommand("move", 200, NUM);
@@ -299,7 +304,7 @@ void runOnePlayerStep(Grid& grid, int NUM)
     std::string player_move;
     std::getline(std::cin, player_move);
     bool isDead = readPlayerAction(grid, NUM, player_move);
-    if(isDead && playerIsDeadNum == 0)
+    if(isDead && playerIsDeadNum == PLAYER_IS_DEAD_VAL)
     {
         playerIsDeadNum = NUM;
         std::cout << "dead player " << NUM << "\n";
@@ -310,7 +315,7 @@ void runOnePlayerStep(Grid& grid, int NUM)
 }
 void runOneRound(Grid& grid, sf::RenderWindow* window, int NUM)
 {
-    if(playerIsDeadNum == 0)
+    if(playerIsDeadNum == PLAYER_IS_DEAD_VAL)
     {
         sendUpdateCommand("game", "round", roundCount);
         sendUpdateCommandField("game", "field" , grid);
@@ -338,17 +343,17 @@ void printGrid(Grid grid, sf::RenderWindow& window)
             sf::Color col = sf::Color::Yellow;
             switch(grid.data.at(r).at(c))
             {
-                case 0:
+                case FLOOR_VAL:
                 default:
                     col = sf::Color::White;
                     break;
-                case 1:
+                case WALL_VAL:
                     col = sf::Color::Black;
                     break;
-                case 2:
+                case PLAYER1_VAL:
                     col = sf::Color::Green;
                     break;
-                case 3:
+                case PLAYER2_VAL:
                     col = sf::Color::Red;
                     break;
             }
@@ -363,7 +368,7 @@ int* mapLR()
     const int size = 16*16;
     static int map[size];
     for(int i = 0; i < size; ++i)
-        map[i] = 0;
+        map[i] = FLOOR_VAL;
 
     return map;
 }
