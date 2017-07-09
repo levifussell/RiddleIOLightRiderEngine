@@ -10,6 +10,6 @@ if [ -f output.log ]; then
 fi
 
 mkfifo fifo0 fifo1 fifo2
-< fifo0 stdbuf -o0 ./Engine/run.out p | tee -a fifo1 fifo2 output.log 1> /dev/null &
+< fifo0 stdbuf -o0 ./Engine/run.out p 200 | tee -a fifo1 fifo2 output.log 1> /dev/null &
 < fifo1 stdbuf -o0 java -cp Bots/JavaBots TyrviBot 2 | tee -a fifo0 output.log 1> /dev/null &
-< fifo2 stdbuf -o0 java -cp Bots/JavaBots LeviFuBot 3 | tee -a fifo0 output.log 1> /dev/null
+< fifo2 stdbuf -o0 java -cp Bots/JavaBots TyrviBot 3 | tee -a fifo0 output.log 1> /dev/null
