@@ -69,7 +69,7 @@ public abstract class Bot {
             this.gameField = value;
         }
     }
-    
+
     public void runBot() {
         while (scan.hasNextLine()) {
             String line = scan.nextLine();
@@ -104,8 +104,9 @@ public abstract class Bot {
                 //}
                 break;
             case "dead":
-                System.out.println("reset");
-                //System.out.flush();
+                if (Integer.parseInt(command[2]) != this.yourBotId) {
+                    System.out.println("reset");
+                }
                 //if(DEBUG)
                 //{
                     ////TimeUnit.MILLISECONDS.sleep(500);
@@ -118,12 +119,7 @@ public abstract class Bot {
                         //Thread.currentThread().interrupt();
                     //}
                 //}
-                break;
 
-            case "dead":
-                if (Integer.parseInt(command[2]) != this.yourBotId) {
-                    System.out.println("reset");
-                }
                 break;
             }
         }
