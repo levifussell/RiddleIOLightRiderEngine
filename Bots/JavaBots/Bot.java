@@ -81,7 +81,7 @@ public abstract class Bot {
             String[] command = line.split(" ");
             switch (command[0]) {
             case "settings":
-                this.updateSettings(command[2], command[3]);
+                this.updateSettings(command[1], command[2]);
                 break;
 
             case "update":
