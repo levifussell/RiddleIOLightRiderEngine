@@ -70,6 +70,8 @@ public abstract class Bot {
         }
     }
 
+    protected abstract void onDead();
+
     public void runBot() {
         while (scan.hasNextLine()) {
             String line = scan.nextLine();
@@ -107,6 +109,7 @@ public abstract class Bot {
                 if (Integer.parseInt(command[2]) != this.yourBotId) {
                     System.out.println("reset");
                 }
+                this.onDead();
                 //if(DEBUG)
                 //{
                     ////TimeUnit.MILLISECONDS.sleep(500);
@@ -124,4 +127,6 @@ public abstract class Bot {
             }
         }
     }
+
+    public int GetBotId() { return this.yourBotId; }
 }

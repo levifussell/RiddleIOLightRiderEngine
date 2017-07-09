@@ -27,11 +27,20 @@ public class LeviFuBot extends Bot
 
     public static void main(String[] args) {
 
+        Bot levifu = new LeviFuBot();
+        int id = 3;
+        if (args.length > 0) {
+            id = Integer.parseInt(args[0]);
+        }
+        levifu.setBotId(id);
+
         writer = null;
         try
         {
-            writer = new BufferedWriter(new FileWriter("DEBUG.log"));
-            writer.write("START DEBUG\n\n");
+            writer = new BufferedWriter(new FileWriter("DEBUG" + levifu.GetBotId() + ".log"));
+            //writer.write("START DEBUG\n\n");
+
+            levifu.runBot();
         }
         catch(Exception e)
         {
@@ -48,15 +57,6 @@ public class LeviFuBot extends Bot
 
             }
         }
-
-
-        Bot levifu = new LeviFuBot();
-        int id = 3;
-        if (args.length > 0) {
-            id = Integer.parseInt(args[0]);
-        }
-        levifu.setBotId(id);
-        levifu.runBot();
     }
 
     private void Initialise()
@@ -73,6 +73,24 @@ public class LeviFuBot extends Bot
         }
     }
 
+    private static void WriteDebug(String output)
+    {
+
+        try
+        {
+            writer.write(output);
+        }
+        catch(IOException e)
+        {
+        }
+    }
+
+    protected void onDead()
+    {
+        WriteDebug("DEAD!\n");
+        this.Initialise();
+    }
+
     String getAction()
     {
         if(this.gameField == null)
@@ -80,6 +98,7 @@ public class LeviFuBot extends Bot
 
         String[] field = this.gameField.split(",");
         String[][] field2d = new String[this.fieldHeight][this.fieldWidth];
+
         for(int i = 0; i < field.length; ++i)
         {
             int row = (int)(i / this.fieldWidth);
@@ -98,65 +117,108 @@ public class LeviFuBot extends Bot
             }
         }
 
+        WriteDebug("DIRECTION: " + "r: " + this.dirRow + ", c: " + this.dirCol + "\n");
+
         //check if in the next move we might hit a wall
         int futureRow = this.rowPrevious + this.dirRow;
         int futureCol = this.colPrevious + this.dirCol;
-        if(futureRow < 0 || futureRow > this.fieldHeight - 1 || futureCol < 0 || futureCol > this.fieldWidth - 1
-                || field2d[futureRow][futureCol].equals("x"))
-        {
+
+        WriteDebug("\tFUTURE POS: " + "r: " + futureRow + ", c: " + futureCol + "\n");
+        if(futureRow >= 0 && futureRow <= this.fieldHeight - 1 && futureCol >= 0 && futureCol <= this.fieldWidth - 1)
+            WriteDebug("\tFUTURE CELL: " + field2d[futureRow][futureCol] + "\n");
+
+        //if(futureRow < 0 || futureRow > this.fieldHeight - 1 || futureCol < 0 || futureCol > this.fieldWidth - 1
+                //|| this.IsBadCell(field2d[futureRow][futureCol]))
+        //{
             //fill left
 //            int countLeft = fillCountRun(this.rowPrevious, this.colPrevious, field2d, FillDirection.LEFT, this.dirRow, this.dirCol);
-            int countLeft = fillCountRun(this.rowPrevious, this.colPrevious, field2d, true, this.dirRow, this.dirCol);
+            int countLeft = fillCountRun(this.rowPrevious, this.colPrevious, field2d, "left", this.dirRow, this.dirCol);
 
             //fill right
 //            int countRight = fillCountRun(this.rowPrevious, this.colPrevious, field2d, FillDirection.RIGHT, this.dirRow, this.dirCol);
-            int countRight = fillCountRun(this.rowPrevious, this.colPrevious, field2d, false, this.dirRow, this.dirCol);
+            int countRight = fillCountRun(this.rowPrevious, this.colPrevious, field2d, "right", this.dirRow, this.dirCol);
 
-            return "left"; //TEMP
+            int countForward = fillCountRun(this.rowPrevious, this.colPrevious, field2d, "forward", this.dirRow, this.dirCol);
+
+            WriteDebug("\tFILL LEFT: " + countLeft + ", FILL RIGHT: " + countRight + ", FILL FORWARD: " + countForward + "\n");
+            //get the vector that points to the left of the player
+            //int orRow_p = this.dirCol;
+            //int orCol_p = -this.dirRow;
+            int orRow_p = -this.dirCol;
+            int orCol_p = this.dirRow;
+            //return "left"; //TEMP
+            //translate the turning vector to the new direction
             //go left if more fill
-            //if(countLeft > countRight)
-            //{
+            int bestChoice = Math.max(Math.max(countLeft, countRight), countForward); //for now the best choice does not decide draws
+            if(bestChoice == countLeft)
+            {
                 //return "left";
-            //}
-            ////otherwise, go right
-            //else
-            //{
+                orRow_p = -this.dirCol;
+                orCol_p = this.dirRow;
+            }
+            //go right if more fill
+            else if(bestChoice == countRight)
+            {
                 //return "right";
-            //}
-        }
+                orRow_p = this.dirCol;
+                orCol_p = -this.dirRow;
+            }
+            //otherwise go forward (because more fill)
+            else
+            {
+                orRow_p = this.dirRow;
+                orCol_p = this.dirCol;
+            }
+
+            if(orRow_p == -1)
+                return "up";
+            else if(orRow_p == 1)
+                return "down";
+            else if(orCol_p == -1)
+                return "left";
+            else if(orCol_p == 1)
+                return "right";
+            else
+                return "left";
+        //}
 
         //otherwise we continue in the same direction
-        if(this.dirRow == -1)
-            return "up";
-        else if(this.dirRow == 1)
-            return "down";
-        else if(this.dirCol == -1)
-            return "left";
-        else if(this.dirCol == 1)
-            return "right";
-        else
-            return "left";
+        //if(this.dirRow == -1)
+            //return "up";
+        //else if(this.dirRow == 1)
+            //return "down";
+        //else if(this.dirCol == -1)
+            //return "left";
+        //else if(this.dirCol == 1)
+            //return "right";
+        //else
+            //return "left";
 
         //return "up";
     }
 
     //we now perform fill on left, right, and forward
     //int fillCountRun(int startRow, int startCol, String[][] field2d, FillDirection dir, int orRow, int orCol)
-    int fillCountRun(int startRow, int startCol, String[][] field2d, boolean isLeft, int orRow, int orCol) {
+    int fillCountRun(int startRow, int startCol, String[][] field2d, String direction, int orRow, int orCol) {
         int orRow_p = 0;
         int orCol_p = 0;
         //create fill direction based on player
-        if (isLeft)
+        if (direction == "left")
         {
             //left turn
+            orRow_p = -orCol;
+            orCol_p = orRow;
+        }
+        else if(direction == "right")
+        {
+            //right turn
             orRow_p = orCol;
             orCol_p = -orRow;
         }
-        else
+        else if(direction == "forward")
         {
-            //right turn
-            orRow_p = -orCol;
-            orCol_p = orRow;
+            orRow_p = orRow;
+            orCol_p = orCol;
         }
 
         int[][] usedCells = new int[this.fieldHeight][this.fieldWidth];
@@ -168,12 +230,13 @@ public class LeviFuBot extends Bot
             }
         }
 
-        return fillCount(startRow, startCol, field2d, orRow_p, orCol_p, usedCells);
+        return fillCount(startRow + orRow_p, startCol + orCol_p, field2d, orRow_p, orCol_p, usedCells);
     }
+
     int fillCount(int startRow, int startCol, String[][] field2d, int orRow, int orCol, int[][] usedCells)
     {
         if(startRow < 0 || startRow > this.fieldHeight - 1 || startCol < 0 || startCol > this.fieldWidth - 1
-                || usedCells[startRow][startCol] == 1)
+                || usedCells[startRow][startCol] == 1 || this.IsBadCell(field2d[startRow][startCol]))
             return 0;
 
         usedCells[startRow][startCol] = 1;
@@ -194,6 +257,11 @@ public class LeviFuBot extends Bot
         int countForward = fillCount(forwardRow, forwardCol, field2d, orRow, orCol, usedCells);
 
         return 1 + countLeft + countRight + countForward;
+    }
+
+    boolean IsBadCell(String cell)
+    {
+        return cell.equals("x") || cell.equals("0") || cell.equals("1");
     }
 
 }
