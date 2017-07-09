@@ -279,7 +279,10 @@ void printFieldString(const Grid& grid)
                     std::cout << ".";
                     break;
             }
-            std::cout << ",";
+
+            //write comma delimeters after ever grid cell except the last cell.
+            if(!(r == grid.rows - 1 && c == grid.columns - 1))
+                std::cout << ",";
         }
     }
     //std::cout << "]";
