@@ -6,7 +6,7 @@ if [ -p fifo0 ]; then
 fi
 
 mkfifo fifo0 fifo1 fifo2
-< fifo0 stdbuf -o0 ./Engine/run.out p | tee fifo1 fifo2 &
+< fifo0 stdbuf -o0 ./Engine/run.out p 100 | tee fifo1 fifo2 &
 stdbuf -o0 java -cp Bots/JavaBots TyrviBot 2 > fifo0 < fifo1 &
 stdbuf -o0 java -cp Bots/JavaBots TyrviBot 3 > fifo0 < fifo2
 

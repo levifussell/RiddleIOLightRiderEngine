@@ -5,8 +5,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
+#include <unistd.h>
 
 //COMPILE: g++ -o run.out main.cpp -lsfml-audio -lsfml-network -lsfml-graphics -lsfml-window -lsfml-system
+
 
 struct Grid
 {
@@ -53,43 +55,25 @@ bool player1Turn;
 int playerIsDeadNum;
 
 bool printScreen;
+float milisecondsToNano = 1000;
+int sleepTimeNanoseconds;
 
 int main(int argc, char* argv[])
 {
     //check for print toggle
     if(argc > 1)
+    {
         printScreen = (argv[1][0] == 'p');
+        sleepTimeNanoseconds = atoi(argv[2]) * milisecondsToNano;
+    }
     else
         printScreen = false;
-
 
     srand(time(NULL));
 
     Grid grid;
-    //Grid grid = createGrid(5, 5);
-    //Grid grid = createGridFromMap(16, 16, mapLR());
-    //grid.data.at(0).at(0) = PLAYER1_VAL;
-    //grid.data.at(0).at(5) = PLAYER2_VAL;
-    //roundCount = 0;
     resetGame(grid);
     player1Turn = true;
-
-    //readPlayerAction(grid, PLAYER1_VAL, "down");
-    //readPlayerAction(grid, PLAYER1_VAL, "right");
-    //movePlayerDown(grid, PLAYER1_VAL);
-    //movePlayerDown(grid, PLAYER1_VAL);
-    //movePlayerRight(grid, PLAYER1_VAL);
-    //movePlayerRight(grid, PLAYER1_VAL);
-    //movePlayerDown(grid, PLAYER1_VAL);
-    //movePlayerDown(grid, PLAYER1_VAL);
-
-    //movePlayerDown(grid, PLAYER2_VAL);
-    //movePlayerDown(grid, PLAYER2_VAL);
-    //movePlayerRight(grid, PLAYER2_VAL);
-    //movePlayerRight(grid, PLAYER2_VAL);
-    //movePlayerDown(grid, PLAYER2_VAL);
-    //movePlayerDown(grid, PLAYER2_VAL);
-
 
     if(printScreen)
     {
@@ -106,23 +90,17 @@ int main(int argc, char* argv[])
 
             window.clear();
 
-            //if(!skipFirst)
-            //{
-                if(player1Turn)
-                    runOneRound(grid, &window, PLAYER1_VAL);
-                else
-                    runOneRound(grid, &window, PLAYER2_VAL);
+            if(player1Turn)
+                runOneRound(grid, &window, PLAYER1_VAL);
+            else
+                runOneRound(grid, &window, PLAYER2_VAL);
 
-                player1Turn = !player1Turn;
-            //}
-            //else
-            //{
-                //printGrid(grid, window);
-            //}
-            //skipFirst = false;
-
+            player1Turn = !player1Turn;
 
             window.display();
+
+            //sleep a bit before continuing
+            usleep(sleepTimeNanoseconds);
         }
     }
     else
