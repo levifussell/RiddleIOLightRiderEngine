@@ -68,9 +68,8 @@ public abstract class Bot {
         case "field":
             this.gameField = value;
         }
-        System.out.println(type + " " + value);
     }
-
+    
     public void runBot() {
         while (scan.hasNextLine()) {
             String line = scan.nextLine();
@@ -121,6 +120,11 @@ public abstract class Bot {
                 //}
                 break;
 
+            case "dead":
+                if (Integer.parseInt(command[2]) != this.yourBotId) {
+                    System.out.println("reset");
+                }
+                break;
             }
         }
     }
