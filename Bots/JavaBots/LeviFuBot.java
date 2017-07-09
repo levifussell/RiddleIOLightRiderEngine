@@ -47,7 +47,7 @@ public class LeviFuBot extends Bot
     String getAction()
     {
         if(this.gameField == null)
-            throw new IllegalArgumentException("gamefiled is null");
+            throw new IllegalArgumentException("gamefield is null");
 
         String[] field = this.gameField.split(",");
         String[][] field2d = new String[this.fieldHeight][this.fieldWidth];
@@ -57,7 +57,7 @@ public class LeviFuBot extends Bot
             int column = i % this.fieldWidth;
             field2d[row][column] = field[i];
 
-            if(field[i].equals(this.yourBotId))
+            if(field[i].equals((this.yourBotId - 2) + ""))
             {
                 if(this.rowPrevious != -1)
                 {
@@ -83,16 +83,17 @@ public class LeviFuBot extends Bot
 //            int countRight = fillCountRun(this.rowPrevious, this.colPrevious, field2d, FillDirection.RIGHT, this.dirRow, this.dirCol);
             int countRight = fillCountRun(this.rowPrevious, this.colPrevious, field2d, false, this.dirRow, this.dirCol);
 
+            return "left"; //TEMP
             //go left if more fill
-            if(countLeft > countRight)
-            {
-                return "left";
-            }
-            //otherwise, go right
-            else
-            {
-                return "right";
-            }
+            //if(countLeft > countRight)
+            //{
+                //return "left";
+            //}
+            ////otherwise, go right
+            //else
+            //{
+                //return "right";
+            //}
         }
 
         //otherwise we continue in the same direction
