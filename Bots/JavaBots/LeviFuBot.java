@@ -1,3 +1,6 @@
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 
 public class LeviFuBot extends Bot
 {
@@ -13,6 +16,8 @@ public class LeviFuBot extends Bot
     private int dirRow;
     private int dirCol;
 
+    private static BufferedWriter writer;
+
     public LeviFuBot()
     {
         super();
@@ -21,6 +26,30 @@ public class LeviFuBot extends Bot
     }
 
     public static void main(String[] args) {
+
+        writer = null;
+        try
+        {
+            writer = new BufferedWriter(new FileWriter("DEBUG.log"));
+            writer.write("START DEBUG\n\n");
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+        finally
+        {
+            try
+            {
+                writer.close();
+            }
+            catch(Exception e)
+            {
+
+            }
+        }
+
+
         Bot levifu = new LeviFuBot();
         int id = 3;
         if (args.length > 0) {
