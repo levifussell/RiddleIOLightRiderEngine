@@ -59,6 +59,9 @@ bool printScreen;
 float milisecondsToNano = 1000;
 int sleepTimeNanoseconds;
 
+int deathsPlayer1;
+int deathsPlayer2;
+
 int main(int argc, char* argv[])
 {
     //check for print toggle
@@ -76,7 +79,12 @@ int main(int argc, char* argv[])
 
     srand(time(NULL));
 
+    //set death count to 0
+    deathsPlayer1 = 0;
+    deathsPlayer2 = 0;
+
     Grid grid;
+    playerIsDeadNum = PLAYER_IS_DEAD_VAL;
     resetGame(grid);
     player1Turn = true;
 
@@ -90,7 +98,14 @@ int main(int argc, char* argv[])
             while(window.pollEvent(event))
             {
                 if(event.type == sf::Event::Closed)
+                {
+                    //print out deaths
+                    std::cout << "DEATHS: \n";
+                    std::cout << "\tPlayer 0: " << deathsPlayer1 << "\n";
+                    std::cout << "\tPlayer 1: " << deathsPlayer2 << "\n";
+
                     window.close();
+                }
             }
 
             window.clear();
@@ -126,6 +141,15 @@ int main(int argc, char* argv[])
 
 void resetGame(Grid& grid)
 {
+    //if a death has occurred, count it
+    if(playerIsDeadNum != PLAYER_IS_DEAD_VAL)
+    {
+        if(playerIsDeadNum == PLAYER1_VAL)
+            deathsPlayer1++;
+        else if(playerIsDeadNum == PLAYER2_VAL)
+            deathsPlayer2++;
+    }
+
     skipFirst = true;
     player1Turn = false;
     playerIsDeadNum = PLAYER_IS_DEAD_VAL;
