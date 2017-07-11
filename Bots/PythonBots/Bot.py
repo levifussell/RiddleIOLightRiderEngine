@@ -53,48 +53,25 @@ class Bot():
         elif command_type == 'update':
             self.update_game(command[2], command[3])
         elif command_type == 'action':
-            action = self.get_action()
-            sys.stdout.write('%s\n' % action)
+            if command[3] == self.your_botid:                
+                action = self.get_action()            
+                print('%s' % action)
         elif command_type == 'dead':
             if command[2] != self.your_botid:
-                sys.stdout.write('reset\n')        
+                print('reset')        
     
     def run_bot(self):
-        # not_finished = True
-        # print(self.your_botid)
-        # while(not_finished):
-        #     try:                
-        #         line = sys.stdin.readline()
-        #         command = line.split()
-        #         print(command)
-        #         if command[0] == 'quit':
-        #             not_finished = False
-        #         self.run_command(command)
-        #     except EOFError:
-        #         break
-        #     except KeyboardInterrupt:
-        #         raise
-
         not_finished = True
-        data = ''
         while(not_finished):
             try:
-                current_line = sys.stdin.readline().rstrip('\r\n')
-                data += current_line + "\n"
-                if current_line.lower().startswith("action move"):
-                    self.update(data)
-                    if (bot.game == None):
-                        bot.setup(self)
-                    bot.do_turn()
-                    data = ''
-                elif current_line.lower().startswith("quit"):
-                    not_finished = False
+                current_line = sys.stdin.readline().split()                
+                self.run_command(current_line)                    
             except EOFError:
                 break
             except KeyboardInterrupt:
                 raise
-            except:
+            #except:
                 # don't raise error or return so that bot attempts to stay alive
-                traceback.print_exc(file=sys.stderr)
-                sys.stderr.flush()
+                #traceback.print_exc(file=sys.stderr)
+                #sys.stderr.flush()
 
