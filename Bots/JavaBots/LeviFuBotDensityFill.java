@@ -2,7 +2,7 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 
-public class LeviFuBot extends Bot
+public class LeviFuBotDensityFill extends Bot
 {
 //    public enum FillDirection
 //    {
@@ -21,22 +21,19 @@ public class LeviFuBot extends Bot
     private int opponentBotId;
 
     private int deathsYourBot;
+    //private int deathsOpponentBot;
 
-    public LeviFuBot()
+    public LeviFuBotDensityFill()
     {
         super();
 
         this.Initialise();
 
-        if(this.yourBotId == 0)
-            this.opponentBotId = 1;
-        else
-            this.opponentBotId = 0;
     }
 
     public static void main(String[] args) {
 
-        Bot levifu = new LeviFuBot();
+        Bot levifu = new LeviFuBotDensityFill();
         int id = 3;
         if (args.length > 0) {
             id = Integer.parseInt(args[0]);
@@ -98,15 +95,23 @@ public class LeviFuBot extends Bot
     {
         if(botId == this.yourBotId)
             this.deathsYourBot++;
+        //else if(botId == this.opponentBotId)
+            //this.deathsOpponentBot++;
 
+        //WriteDebug("DEAD!\n");
         WriteDebug("DEATH COUNT: \n");
         WriteDebug("\t" + this.yourBotId +": " + this.deathsYourBot + "\n");
-
+        //WriteDebug("\t" + this.opponentBotId +": " + this.deathsOpponentBot + "\n");
         this.Initialise();
     }
 
     String getAction()
     {
+        if(this.yourBotId == 0)
+            this.opponentBotId = 1;
+        else
+            this.opponentBotId = 0;
+
         if(this.gameField == null)
             throw new IllegalArgumentException("gamefield is null");
 
@@ -146,13 +151,13 @@ public class LeviFuBot extends Bot
         //{
             //fill left
 //            int countLeft = fillCountRun(this.rowPrevious, this.colPrevious, field2d, FillDirection.LEFT, this.dirRow, this.dirCol);
-            int countLeft = fillCountRun(this.rowPrevious, this.colPrevious, field2d, "left", this.dirRow, this.dirCol);
+            float countLeft = fillCountRun(this.rowPrevious, this.colPrevious, field2d, "left", this.dirRow, this.dirCol);
 
             //fill right
 //            int countRight = fillCountRun(this.rowPrevious, this.colPrevious, field2d, FillDirection.RIGHT, this.dirRow, this.dirCol);
-            int countRight = fillCountRun(this.rowPrevious, this.colPrevious, field2d, "right", this.dirRow, this.dirCol);
+            float countRight = fillCountRun(this.rowPrevious, this.colPrevious, field2d, "right", this.dirRow, this.dirCol);
 
-            int countForward = fillCountRun(this.rowPrevious, this.colPrevious, field2d, "forward", this.dirRow, this.dirCol);
+            float countForward = fillCountRun(this.rowPrevious, this.colPrevious, field2d, "forward", this.dirRow, this.dirCol);
 
             //WriteDebug("\tFILL LEFT: " + countLeft + ", FILL RIGHT: " + countRight + ", FILL FORWARD: " + countForward + "\n");
             //get the vector that points to the left of the player
@@ -163,7 +168,7 @@ public class LeviFuBot extends Bot
             //return "left"; //TEMP
             //translate the turning vector to the new direction
             //go left if more fill
-            int bestChoice = Math.max(Math.max(countLeft, countRight), countForward); //for now the best choice does not decide draws
+            float bestChoice = Math.max(Math.max(countLeft, countRight), countForward); //for now the best choice does not decide draws
             if(bestChoice == countLeft)
             {
                 //return "left";
@@ -213,7 +218,7 @@ public class LeviFuBot extends Bot
 
     //we now perform fill on left, right, and forward
     //int fillCountRun(int startRow, int startCol, String[][] field2d, FillDirection dir, int orRow, int orCol)
-    int fillCountRun(int startRow, int startCol, String[][] field2d, String direction, int orRow, int orCol) {
+    float fillCountRun(int startRow, int startCol, String[][] field2d, String direction, int orRow, int orCol) {
         int orRow_p = 0;
         int orCol_p = 0;
         //create fill direction based on player
@@ -244,44 +249,85 @@ public class LeviFuBot extends Bot
             }
         }
 
-        return fillCount(startRow + orRow_p, startCol + orCol_p, field2d, orRow_p, orCol_p, usedCells);
+        float[] area_perim = fillCount(startRow + orRow_p, startCol + orCol_p, field2d, orRow_p, orCol_p, usedCells, startRow + orRow_p, startCol + orCol_p);
+        float area = area_perim[0];
+        float dist = area_perim[1];
+
+        if(area == 0 || dist == 0)
+        {
+            return 0;
+        }
+        else
+        {
+            //float perimOfCircleWithArea = 2 * (float)Math.sqrt(area * Math.PI);//2 * (float)Math.PI * (float)Math.sqrt(area / Math.PI);
+            //return (float)(area * area) * (perimOfCircleWithArea / (float)perim);
+            //float avgDist = (float)dist / (float)area;
+            //return (float)(area) - avgDist;
+            return area;
+        }
     }
 
-    int fillCount(int startRow, int startCol, String[][] field2d, int orRow, int orCol, int[][] usedCells)
+    float[] fillCount(int startRow, int startCol, String[][] field2d, int orRow, int orCol, int[][] usedCells, int originRow, int originCol)
     {
-        int returnBonus = 1;
+        float returnBonus = 1.0f;
         if(startRow < 0 || startRow > this.fieldHeight - 1 || startCol < 0 || startCol > this.fieldWidth - 1
                 || usedCells[startRow][startCol] == 1 ||
                 //check for collision with ourselves or X's. We want a bonus to turn
                 //  towards the player instead.
-                /*(*/this.IsBadCell(field2d[startRow][startCol])) /*&&*/
+                this.IsBadCell(field2d[startRow][startCol]))
                 //!field2d[startRow][startCol].equals(this.opponentBotId + "")))
-            return 0;
+        {
+            float[] perimeter_block = {0.0f, 0.0f};
+            return perimeter_block;
+        }
         //else if(field2d[startRow][startCol].equals(this.opponentBotId + ""))
-            //returnBonus = 10;
+        //{
+            //returnBonus = 1;//-10;
+            //WriteDebug("PLAYER TURN: " + this.opponentBotId + "\n");
+        //}
 
         usedCells[startRow][startCol] = 1;
 
         //left turn
         int leftRow = -orCol + startRow;
         int leftCol = orRow + startCol;
-        int countLeft = fillCount(leftRow, leftCol, field2d, orRow, orCol, usedCells);
+        float[] countLeft = fillCount(leftRow, leftCol, field2d, orRow, orCol, usedCells, originRow, originCol);
 
         //right turn
         int rightRow = orCol + startRow;
         int rightCol = -orRow + startCol;
-        int countRight = fillCount(rightRow, rightCol, field2d, orRow, orCol, usedCells);
+        float[] countRight = fillCount(rightRow, rightCol, field2d, orRow, orCol, usedCells, originRow, originCol);
 
         //forward
         int forwardRow = orRow + startRow;
         int forwardCol = orCol + startCol;
-        int countForward = fillCount(forwardRow, forwardCol, field2d, orRow, orCol, usedCells);
+        float[] countForward = fillCount(forwardRow, forwardCol, field2d, orRow, orCol, usedCells, originRow, originCol);
 
-        return returnBonus + countLeft + countRight + countForward;
+        int distX = Math.abs(originRow - startRow);
+        int distY = Math.abs(originCol - startCol);
+        int dist = distX + distY;
+        float[] block = {returnBonus, dist};
+        float[] culm = {0.0f, 0.0f};
+        float gamma = 10.0f;//1.5f;
+        // IF gamma > 1.0f, bot cares more about distant squares.
+        // IF gamma < 1.0f, bot cares more about close squares.
+        culm[0] = block[0] + gamma * (countLeft[0] + countRight[0] + countForward[0]); //area
+        culm[1] = block[1] + gamma * (countLeft[1] + countRight[1] + countForward[1]); //distance
+
+        //TODO: narrowness: measure of how many left and right blocks get counted. This could be
+        // done either by counting left/right blocks or by starting with a long wall-strip on each
+        // side of the bot that only counts forward (avoid left/right except at the start).
+
+        return culm;
     }
 
     boolean IsBadCell(String cell)
     {
         return cell.equals("x") || cell.equals("0") || cell.equals("1");
+    }
+
+    boolean IsWallCell(String cell)
+    {
+        return cell.equals("x");
     }
 }

@@ -10,9 +10,9 @@ if [ -f output.log ]; then
 fi
 
 mkfifo fifo0 fifo1 fifo2
-< fifo0 stdbuf -o0 ./Engine/run.out p 80 | tee -a fifo1 fifo2 output.log 1> /dev/null &
+< fifo0 stdbuf -o0 ./Engine/run.out p 0 | tee -a fifo1 fifo2 output.log 1> /dev/null &
 < fifo1 stdbuf -o0 java -cp Bots/JavaBots LeviFuBot 0 | tee -a fifo0 output.log 1> /dev/null & #GREEEN
-< fifo2 stdbuf -o0 java -cp Bots/JavaBots LeviFuBot 1 | tee -a fifo0 output.log 1> /dev/null #RED
+< fifo2 stdbuf -o0 java -cp Bots/JavaBots LeviFuBotDensityFill 1 | tee -a fifo0 output.log 1> /dev/null #RED
 
 # die() {
 #    printf '%s\n' "$1" >&2
