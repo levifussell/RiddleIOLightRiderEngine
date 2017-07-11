@@ -41,3 +41,4 @@ Thumbs.db
 # IDE configuration files #
 ###########################
 .idea
+Bots/PythonBots/__pycache__/

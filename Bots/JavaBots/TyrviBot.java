@@ -17,4 +17,9 @@ public class TyrviBot extends Bot {
         tyrvi.setBotId(id);
         tyrvi.runBot();
     }
+
+    public void onDead()
+    {
+        //TODO
+    }
 }

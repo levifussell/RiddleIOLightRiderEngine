@@ -18,11 +18,18 @@ public class LeviFuBot extends Bot
 
     private static BufferedWriter writer;
 
+    private int opponentBotId;
+
     public LeviFuBot()
     {
         super();
 
         this.Initialise();
+
+        if(this.yourBotId == 0)
+            this.opponentBotId = 1;
+        else
+            this.opponentBotId = 0;
     }
 
     public static void main(String[] args) {
@@ -101,11 +108,11 @@ public class LeviFuBot extends Bot
 
         for(int i = 0; i < field.length; ++i)
         {
-            int row = (int)(i / this.fieldWidth);
+            int row = i / this.fieldWidth;
             int column = i % this.fieldWidth;
             field2d[row][column] = field[i];
 
-            if(field[i].equals((this.yourBotId - 2) + ""))
+            if(field[i].equals((this.yourBotId) + ""))
             {
                 if(this.rowPrevious != -1)
                 {
@@ -235,9 +242,16 @@ public class LeviFuBot extends Bot
 
     int fillCount(int startRow, int startCol, String[][] field2d, int orRow, int orCol, int[][] usedCells)
     {
+        int returnBonus = 1;
         if(startRow < 0 || startRow > this.fieldHeight - 1 || startCol < 0 || startCol > this.fieldWidth - 1
-                || usedCells[startRow][startCol] == 1 || this.IsBadCell(field2d[startRow][startCol]))
+                || usedCells[startRow][startCol] == 1 ||
+                //check for collision with ourselves or X's. We want a bonus to turn
+                //  towards the player instead.
+                /*(*/this.IsBadCell(field2d[startRow][startCol])) /*&&*/
+                //!field2d[startRow][startCol].equals(this.opponentBotId + "")))
             return 0;
+        //else if(field2d[startRow][startCol].equals(this.opponentBotId + ""))
+            //returnBonus = 10;
 
         usedCells[startRow][startCol] = 1;
 
@@ -256,12 +270,11 @@ public class LeviFuBot extends Bot
         int forwardCol = orCol + startCol;
         int countForward = fillCount(forwardRow, forwardCol, field2d, orRow, orCol, usedCells);
 
-        return 1 + countLeft + countRight + countForward;
+        return returnBonus + countLeft + countRight + countForward;
     }
 
     boolean IsBadCell(String cell)
     {
         return cell.equals("x") || cell.equals("0") || cell.equals("1");
     }
-
 }
