@@ -11,7 +11,7 @@ class Bot():
         self.field_width = 16
         self.field_height = 16
         self.game_round = 0
-        self.game_field = ""
+        self.game_field = ""        
     
     def get_action(self):
         raise NotImplementedError("Must implement get action")
